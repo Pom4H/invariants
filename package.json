@@ -1,0 +1,43 @@
+{
+  "name": "@pom4h/invariants",
+  "version": "0.1.0",
+  "description": "Typed lifecycle invariants from design to runtime.",
+  "type": "module",
+  "sideEffects": false,
+  "files": ["dist", "README.md", "LICENSE"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "bun test",
+    "check": "bun run typecheck && bun test"
+  },
+  "keywords": [
+    "typescript",
+    "invariants",
+    "domain-modeling",
+    "type-safety",
+    "ir",
+    "lifecycle"
+  ],
+  "license": "MIT",
+  "author": "Roman Popov",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pom4H/invariants.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Pom4H/invariants/issues"
+  },
+  "homepage": "https://github.com/Pom4H/invariants#readme",
+  "devDependencies": {
+    "@types/bun": "^1.4.0",
+    "typescript": "^7.0.0"
+  },
+  "packageManager": "bun@1.4.0"
+}
