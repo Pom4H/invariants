@@ -128,7 +128,26 @@ Tank ──water──▶ Pump ──water──▶ Pressure sensor
 
 The same `pump-1` semantic identity survives PLC generation, runtime state, history and visualization instead of being independently recreated as strings.
 
-The first target integration is **LanMon 5**, where the graph will connect equipment, physical ports, signals, commands, PLC I/O, control rules, alarms, simulation, historian series and adaptive SVG.
+## First real consumer: LanMon 5
+
+LanMon 5 now builds an `invariants` lifecycle graph from its canonical `ProjectIR` during project compilation.
+
+The first integration maps:
+
+```text
+engineering identity
+  ├── equipment / ports
+  ├── signals / commands
+  ├── process-flow relations
+  ├── controller ownership
+  ├── PLC input/output projections
+  ├── WebSocket runtime projections
+  └── SVG view projections
+```
+
+Graph compilation currently rejects incompatible process flow, duplicate/dangling identities and implicit multiple PLC owners of the same command. Tests verify that one semantic signal such as `pump-1.running` has explicit lineage into both PLC and runtime artifacts.
+
+LanMon consumes this repository as a commit-pinned source dependency, so the industrial integration exercises the same core code that CI tests here.
 
 ## Why a separate library?
 
@@ -168,9 +187,11 @@ bun run build
 
 Type-level tests use `@ts-expect-error` to prove invalid relationships remain compile errors. Runtime tests cover deterministic compilation, fingerprints, dangling references, lineage and graph-wide invariants.
 
+CI also installs the current commit into a clean external Bun project and imports the package there. This protects the Git-consumer contract independently from the repository's own tests.
+
 ## Status
 
-`0.1` is deliberately small. The next milestone is to replace the local semantic-graph machinery in LanMon 5 with this package, then validate the same abstraction against `tsops`.
+`0.1` is deliberately small. LanMon 5 is the first production-shaped consumer. The next independent proof is to express the design → deploy → runtime identities already present in `tsops` through the same core without adding infrastructure-specific concepts to this package.
 
 ## License
 
