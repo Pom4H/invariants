@@ -205,6 +205,27 @@ Infrastructure can model applications, resources and runtime endpoints. Industri
 
 The useful test of an abstraction is whether it survives a domain change. `tsops` and LanMon are intentionally very different proving grounds.
 
+## The first real consumer
+
+LanMon 5 now materializes an `invariants` graph from its canonical `ProjectIR` during project compilation.
+
+The graph does not replace the product model. It verifies that one product identity survives into derived phases:
+
+```text
+signal:pump-1.running
+       ├── plc ─────▶ plc.input:main-plc:%IX0.0
+       └── runtime ─▶ runtime.signal:pump-1.running
+
+equipment:pump-1
+       └── view ────▶ view.node:main/pump-1
+```
+
+The adapter also expresses controller ownership and process-flow relations. A graph compiler pass rejects incompatible media/directions, dangling identities and two different PLC controllers implicitly writing the same command.
+
+That integration exposed an important design detail immediately: a lookup returning a generic `AnyEntity` could no longer be passed into a relation requiring a `port` or a `controller`. The adapter had to validate the entity kind and return `Entity<K>` instead. In other words, the abstraction was already forcing a previously implicit assumption to become explicit.
+
+This is what I want from the library: not more configuration syntax, but narrower places where semantic information is allowed to disappear.
+
 ## Why this matters more with AI-generated systems
 
 AI agents can generate a large amount of syntactically correct configuration very quickly. That makes semantic feedback loops more valuable, not less.
