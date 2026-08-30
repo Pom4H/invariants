@@ -19,3 +19,20 @@ jobs:
       - run: bun install
       - run: bun run check
       - run: bun run build
+      - name: Git consumer smoke test
+        run: |
+          mkdir -p /tmp/invariants-consumer
+          cat > /tmp/invariants-consumer/package.json <<EOF
+          {
+            "name": "invariants-consumer",
+            "private": true,
+            "dependencies": {
+              "@pom4h/invariants": "github:Pom4H/invariants#${GITHUB_SHA}"
+            }
+          }
+          EOF
+          cd /tmp/invariants-consumer
+          bun install
+          echo "--- invariants lock entry ---"
+          grep -n -B 2 -A 3 '@pom4h/invariants' bun.lock || true
+          bun -e 'import { entity } from "@pom4h/invariants"; const x = entity("app", "api"); if (x.id !== "api") process.exit(1)'
