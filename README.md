@@ -8,6 +8,8 @@ You declare an entity as a typed value, then deployment turns it into a string, 
 
 `invariants` is a small TypeScript foundation for preserving those semantic identities across phases.
 
+**Read the design note:** [Lifecycle Invariants: Your Types Should Survive Deployment](docs/lifecycle-invariants.md)
+
 ```text
 TypeScript authoring
        │
