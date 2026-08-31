@@ -6,7 +6,7 @@
 
 ## Non-negotiable boundaries
 
-- Keep the core independent of LanMon, SCADA, Kubernetes, Docker, databases and UI frameworks.
+- Keep the core independent of any specific product, industrial-control stack, infrastructure platform, database or UI framework.
 - Keep zero runtime dependencies unless there is an exceptional, measured reason.
 - Prefer TypeScript compile-time guarantees for local structural constraints.
 - Prefer deterministic graph validation for constraints that require the materialized system.
