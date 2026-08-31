@@ -22,7 +22,7 @@ typed semantic graph
                  │
         ┌────────┼─────────┐
         ▼        ▼         ▼
-       PLC     runtime     UI
+     deploy    runtime     UI
         │        │         │
         └────────┴─────────┘
              lineage
@@ -41,14 +41,14 @@ const running = entity('signal', 'pump-1.running', {
 Then project that identity into concrete lifecycle artifacts:
 
 ```ts
-const plcInput = entity('plc.input', '%IX0.0')
+const controllerInput = entity('controller.input', 'input-0')
 const runtimeSignal = entity('runtime.signal', 'pump-1.running')
 
-project('plc', running, plcInput)
+project('control', running, controllerInput)
 project('runtime', running, runtimeSignal)
 ```
 
-The source identity remains canonical. PLC addresses, runtime topics, database series, SVG nodes and deployment resources are derived identities with explicit lineage.
+The source identity remains canonical. Controller addresses, runtime topics, database series, UI nodes and deployment resources are derived identities with explicit lineage.
 
 ## Two kinds of guarantees
 
@@ -112,7 +112,7 @@ The v0.1 core intentionally contains only:
 - canonical serializable IR;
 - deterministic SHA-256 fingerprints.
 
-It intentionally does **not** contain schema validation, state machines, databases, networking, units, UI, Kubernetes or SCADA concepts. Those belong in domain adapters.
+It intentionally does **not** contain schema validation, state machines, databases, networking, units, UI, Kubernetes or industrial-control concepts. Those belong in domain adapters.
 
 ## Industrial automation example
 
@@ -121,35 +121,14 @@ It intentionally does **not** contain schema validation, state machines, databas
 ```text
 Tank ──water──▶ Pump ──water──▶ Pressure sensor
                  │
-                 ├── running ──▶ PLC input
-                 ├── running ──▶ WebSocket runtime signal
+                 ├── running ──▶ controller input
+                 ├── running ──▶ runtime signal
                  ├── flow ─────▶ historian series
-                 ├── start ────▶ PLC output
-                 └── equipment ─▶ SVG node
+                 ├── start ────▶ controller output
+                 └── equipment ─▶ UI node
 ```
 
-The same `pump-1` semantic identity survives PLC generation, runtime state, history and visualization instead of being independently recreated as strings.
-
-## First real consumer: LanMon 5
-
-LanMon 5 now builds an `invariants` lifecycle graph from its canonical `ProjectIR` during project compilation.
-
-The first integration maps:
-
-```text
-engineering identity
-  ├── equipment / ports
-  ├── signals / commands
-  ├── process-flow relations
-  ├── controller ownership
-  ├── PLC input/output projections
-  ├── WebSocket runtime projections
-  └── SVG view projections
-```
-
-Graph compilation currently rejects incompatible process flow, duplicate/dangling identities and implicit multiple PLC owners of the same command. Tests verify that one semantic signal such as `pump-1.running` has explicit lineage into both PLC and runtime artifacts.
-
-LanMon consumes this repository as a commit-pinned source dependency, so the industrial integration exercises the same core code that CI tests here.
+The same `pump-1` semantic identity survives control generation, runtime state, history and visualization instead of being independently recreated as strings.
 
 ## Why a separate library?
 
@@ -169,7 +148,7 @@ and in engineering software:
 
 ```text
 pump-1
-   ├── PLC variables
+   ├── controller bindings
    ├── telemetry
    ├── alarms
    ├── history
@@ -193,7 +172,7 @@ CI also installs the current commit into a clean external Bun project and import
 
 ## Status
 
-`0.1` is deliberately small. LanMon 5 is the first production-shaped consumer. The next independent proof is to express the design → deploy → runtime identities already present in `tsops` through the same core without adding infrastructure-specific concepts to this package.
+`0.1` is deliberately small. The next proof is to apply the same core to independent domains without adding domain-specific concepts to the package itself.
 
 ## License
 
